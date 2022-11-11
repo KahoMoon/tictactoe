@@ -1,11 +1,15 @@
 package com.example.tictactoe;
 
 import android.content.Context;
+import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import java.util.*;
 
 /*Class that handles the logical part of the game*/
-public class Game {
+public class Game extends AppCompatActivity {
 
     /*enum for the possible turns*/
     public enum TURN {
@@ -14,13 +18,22 @@ public class Game {
         NONE
     }
 
-    Context context;
     private final TURN[][] board;   //game board
     private TURN turn;  //turn
 
+    VisualBoard vb;
+    View view;
+    ConstraintLayout layout;
+
+    /*holds the ids of the game piece views*/
+    Stack<Integer> undoStack = new Stack<>();
+
+
     /*default Game constructor*/
-    public Game(Context context) {
-        this.context = context;
+    public Game(Context context, View view) {
+        this.view = view;
+        this.layout = (ConstraintLayout) view;
+        vb = new VisualBoard(context, view);
 
         board = new TURN[3][3];
         for (int column = 0; column <= 2; column++){
@@ -28,6 +41,16 @@ public class Game {
                 board[column][row] = TURN.NONE;
             }
         }
+        whoGoesFirst();
+    }
+
+    /*removes the most recently placed piece from the board*/
+    public void undo() {
+        int removedYCoordinate = undoStack.pop();
+        int removedXCoordinate = undoStack.pop();
+        board[removedXCoordinate][removedYCoordinate] = TURN.NONE;
+
+        vb.undo();
     }
 
     /*returns X or O depending on which player's turn it is*/
@@ -58,6 +81,17 @@ public class Game {
         }
     }
 
+    public void addGamePiece(int boardXCoordinate, int boardYCoordinate, int vbXCoordinate, int vbYCoordinate, TURN turn) {
+        if (turn == TURN.X) {
+            addX(boardXCoordinate, boardYCoordinate);
+            vb.addGamePiece(vbXCoordinate, vbYCoordinate, turn);
+        }
+        else {
+            addO(boardXCoordinate, boardYCoordinate);
+            vb.addGamePiece(vbXCoordinate, vbYCoordinate, turn);
+        }
+    }
+
     /*clears the game board of X and O pieces*/
     public void clearBoard() {
         for (int column = 0; column <= 2; column++){
@@ -65,6 +99,7 @@ public class Game {
                 board[column][row] = TURN.NONE;
             }
         }
+        vb.clearBoard();
     }
 
     /*determines who goes first*/
