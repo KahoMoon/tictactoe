@@ -42,6 +42,11 @@ public class VisualBoard extends AppCompatActivity {
         return removedId;
     }
 
+    public void clearBoard() {
+        layout.removeAllViews();
+        undoStack.clear();
+    }
+
     /*adds an X piece*/
     public void addX(int x, int y) {
         ImageView gamePiece = new ImageView(context);
