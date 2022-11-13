@@ -37,9 +37,13 @@ public class VisualBoard extends AppCompatActivity {
 
     /*removes the most recently placed piece from the board*/
     public Integer undo() {
-        int removedId = undoStack.pop();
-        layout.removeView(findViewById(removedId));
-        return removedId;
+        if (!undoStack.isEmpty()) {
+            int removedId = undoStack.pop();
+            layout.removeView(findViewById(removedId));
+            return removedId;
+        }
+
+        return 0;
     }
 
     public void clearBoard() {

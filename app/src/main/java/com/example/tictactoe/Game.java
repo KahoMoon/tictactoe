@@ -1,7 +1,9 @@
 package com.example.tictactoe;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -24,6 +26,7 @@ public class Game extends AppCompatActivity {
     VisualBoard vb;
     View view;
     ConstraintLayout layout;
+    Context context;
 
     /*holds the ids of the game piece views*/
     Stack<Integer> undoStack = new Stack<>();
@@ -31,9 +34,16 @@ public class Game extends AppCompatActivity {
 
     /*default Game constructor*/
     public Game(Context context, View view) {
+        this.context = context;
         this.view = view;
         this.layout = (ConstraintLayout) view;
         vb = new VisualBoard(context, view);
+
+        Button test = layout.findViewById(R.id.undo_button);
+        test.setOnClickListener(view1 -> {
+            undo();
+            Log.d("testing undo button", "testing the undo button");
+        });
 
         board = new TURN[3][3];
         for (int column = 0; column <= 2; column++){
@@ -46,9 +56,11 @@ public class Game extends AppCompatActivity {
 
     /*removes the most recently placed piece from the board*/
     public void undo() {
-        int removedYCoordinate = undoStack.pop();
-        int removedXCoordinate = undoStack.pop();
-        board[removedXCoordinate][removedYCoordinate] = TURN.NONE;
+        if (!undoStack.isEmpty()) {
+            int removedYCoordinate = undoStack.pop();
+            int removedXCoordinate = undoStack.pop();
+            board[removedXCoordinate][removedYCoordinate] = TURN.NONE;
+        }
 
         vb.undo();
     }
